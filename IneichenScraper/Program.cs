@@ -16,6 +16,9 @@ using System.Security.Cryptography.X509Certificates;
 using System.Data.SqlClient;
 using System.Data;
 using static IneichenScraper.Program;
+using static System.Net.WebRequestMethods;
+using System.Security.Cryptography;
+using System.Net.Http;
 
 namespace IneichenScraper
 {
@@ -75,18 +78,27 @@ namespace IneichenScraper
 
                 var descriptionNode = items.SelectSingleNode(".//div[@class='auction-date-location']").InnerText.Trim();
                 string description = descriptionNode != null ? descriptionNode : null;
-           
 
 
+               //string ImageURl_full = "https://ineichen.com";
+              
                 var imageAttribute = items.SelectSingleNode(".//a[@class='auction-item__image']/img");
                 string imageUrl = imageAttribute.GetAttributeValue("src", "");
-               
+
+
+                //tring ImageURl_full = "https://ineichen.com";
+                string url = "https://ineichen.com" + imageUrl;
+         
+
+              
 
                 var linkNode = items.SelectSingleNode(".//div[@class='auction-item__btns']/a");
-                string linkUrl = linkNode != null ? linkNode.GetAttributeValue("href", "") : "";
+            string linkUrl1 = linkNode != null ? linkNode.GetAttributeValue("href", "") : "";
+
+                string linkUrl = "https://ineichen.com" + linkUrl1;
 
 
-            
+
                 string lotCount = items.SelectSingleNode(".//div[@class='auction-item__btns']/a").InnerText;
                 Match match_lotCount = Regex.Match(lotCount, @"(\d{2})");
                 string matched_lotCount = (match_lotCount.Groups[1].Value);
@@ -148,17 +160,18 @@ namespace IneichenScraper
                 string location = LocationNode != null ? LocationNode : null;
 
 
-                var IneichenProduct = new IneichenProduct() { Title = title, Description = description, ImageUrl = imageUrl, Link = linkUrl, LotCount = matched_lotCount, StartDate = matched_StartDate, StartMonth = matched_StartMonth, StartYear = matched_StartYear,StartTime=matched_StartTime,EndDate= matched_EndDate,EndMonth=matched_EndMonth,EndYear=matched_EndYear,EndTime=matched_EndTime, Location = location };
-          
+                var IneichenProduct = new IneichenProduct() { Title = title, Description = description, ImageUrl = url, Link = linkUrl, LotCount = matched_lotCount, StartDate = matched_StartDate, StartMonth = matched_StartMonth, StartYear = matched_StartYear,StartTime=matched_StartTime,EndDate= matched_EndDate,EndMonth=matched_EndMonth,EndYear=matched_EndYear,EndTime=matched_EndTime, Location = location };
+
+                //var IneichenProduct = new IneichenProduct() { ImageUrl = share };
                 IPobj.Add(IneichenProduct);
-               Console.WriteLine($" {title} {description} {imageUrl} {linkUrl}  {match_lotCount} {matched_StartDate} {match_StartMonth} {matched_StartYear} {matched_StartTime} {matched_EndDate} {matched_EndMonth} {matched_EndYear} {matched_EndTime} {location}");
+                Console.WriteLine($" {title} {description} {url} {linkUrl}  {match_lotCount} {matched_StartDate} {match_StartMonth} {matched_StartYear} {matched_StartTime} {matched_EndDate} {matched_EndMonth} {matched_EndYear} {matched_EndTime} {location}");
               
 
 
 
             }
-            //InsertAuctionDataIntoDatabase(IPobj);
-            InsertOrUpdateAuctionDataIntoDatabase(IPobj);
+           //InsertAuctionDataIntoDatabase(IPobj);
+         InsertOrUpdateAuctionDataIntoDatabase(IPobj);
 
             Console.ReadLine();
 
@@ -241,7 +254,41 @@ namespace IneichenScraper
 
             }
 
+            void InsertAuctionDataIntoDatabase(List<IneichenProduct> auctionDataList)
+            {
 
+                string conn = ConfigurationManager.ConnectionStrings["CreateConnection"].ConnectionString;
+
+                using (SqlConnection connection = new SqlConnection(conn))
+                {
+                    connection.Open();
+
+                    try
+                    {
+                        foreach (var data in auctionDataList)
+                        {
+                            // stored procedure
+                            string insertQuery = "SP_Imgurl";
+
+                            using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                            {
+                                command.CommandType = CommandType.StoredProcedure;
+
+                               
+                                command.Parameters.AddWithValue("@ImageUrl", data.ImageUrl);
+                               
+                                
+
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message.ToString());
+                    }
+                }
+            }
 
 
         }
@@ -250,48 +297,6 @@ namespace IneichenScraper
 
 
 
-//void InsertAuctionDataIntoDatabase(List<IneichenProduct> auctionDataList)
-//{
 
-//    string conn = ConfigurationManager.ConnectionStrings["CreateConnection"].ConnectionString;
 
-//    using (SqlConnection connection = new SqlConnection(conn))
-//    {
-//        connection.Open();
 
-//        try
-//        {
-//            foreach (var data in auctionDataList)
-//            {
-//                // stored procedure
-//                string insertQuery = "SP_InsertIneichenProductData";
-
-//                using (SqlCommand command = new SqlCommand(insertQuery, connection))
-//                {
-//                    command.CommandType = CommandType.StoredProcedure;
-
-//                    command.Parameters.AddWithValue("@Title", data.Title);
-//                    command.Parameters.AddWithValue("@Description", data.Description);
-//                    command.Parameters.AddWithValue("@ImageUrl", data.ImageUrl);
-//                    command.Parameters.AddWithValue("@Link", data.Link);
-//                    command.Parameters.AddWithValue("@LotCount", data.LotCount);
-//                    command.Parameters.AddWithValue("@StartDate", data.StartDate);
-//                    command.Parameters.AddWithValue("@StartMonth", data.StartMonth);
-//                    command.Parameters.AddWithValue("@StartYear", data.StartYear);
-//                    command.Parameters.AddWithValue("@StartTime", data.StartTime);
-//                    command.Parameters.AddWithValue("@EndDate", data.EndDate);
-//                    command.Parameters.AddWithValue("@EndMonth", data.EndMonth);
-//                    command.Parameters.AddWithValue("@EndYear", data.EndYear);
-//                    command.Parameters.AddWithValue("@EndTime", data.EndTime);
-//                    command.Parameters.AddWithValue("@Location", data.Location);
-
-//                    command.ExecuteNonQuery();
-//                }
-//            }
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine(ex.Message.ToString());
-//        }
-//    }
-//}
