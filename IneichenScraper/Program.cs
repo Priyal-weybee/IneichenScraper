@@ -163,51 +163,7 @@ namespace IneichenScraper
             Console.ReadLine();
 
 
-            //void InsertAuctionDataIntoDatabase(List<IneichenProduct> auctionDataList)
-            //{
-
-            //    string conn = ConfigurationManager.ConnectionStrings["CreateConnection"].ConnectionString;
-
-            //    using (SqlConnection connection = new SqlConnection(conn))
-            //    {
-            //        connection.Open();
-
-            //        try
-            //        {
-            //            foreach (var data in auctionDataList)
-            //            {
-            //                // stored procedure
-            //                string insertQuery = "SP_InsertIneichenProductData";
-
-            //                using (SqlCommand command = new SqlCommand(insertQuery, connection))
-            //                {
-            //                    command.CommandType = CommandType.StoredProcedure;
-
-            //                    command.Parameters.AddWithValue("@Title", data.Title);
-            //                    command.Parameters.AddWithValue("@Description", data.Description);
-            //                    command.Parameters.AddWithValue("@ImageUrl", data.ImageUrl);
-            //                    command.Parameters.AddWithValue("@Link", data.Link);
-            //                    command.Parameters.AddWithValue("@LotCount", data.LotCount);
-            //                    command.Parameters.AddWithValue("@StartDate", data.StartDate);
-            //                    command.Parameters.AddWithValue("@StartMonth", data.StartMonth);
-            //                    command.Parameters.AddWithValue("@StartYear", data.StartYear);
-            //                    command.Parameters.AddWithValue("@StartTime", data.StartTime);
-            //                    command.Parameters.AddWithValue("@EndDate", data.EndDate);
-            //                    command.Parameters.AddWithValue("@EndMonth", data.EndMonth);
-            //                    command.Parameters.AddWithValue("@EndYear", data.EndYear);
-            //                    command.Parameters.AddWithValue("@EndTime", data.EndTime);
-            //                    command.Parameters.AddWithValue("@Location", data.Location);
-
-            //                    command.ExecuteNonQuery();
-            //                }
-            //            }
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            Console.WriteLine(ex.Message.ToString());
-            //        }
-            //    }
-            //}
+          
             void InsertOrUpdateAuctionDataIntoDatabase(List<IneichenProduct> auctionDataList)
             {
                 string conn = ConfigurationManager.ConnectionStrings["CreateConnection"].ConnectionString;
@@ -227,21 +183,7 @@ namespace IneichenScraper
                             if (existingCount > 0)
                             {
 
-                                //string updateQuery = @"UPDATE Auctions
-                                //           SET Description = @Description, 
-                                //               ImageUrl = @ImageUrl, 
-                                //               Link = @Link, 
-                                //               LotCount = @LotCount, 
-                                //               StartDate = @StartDate, 
-                                //               StartMonth = @StartMonth, 
-                                //               StartYear = @StartYear, 
-                                //               StartTime = @StartTime, 
-                                //               EndDate = @EndDate, 
-                                //               EndMonth = @EndMonth, 
-                                //               EndYear = @EndYear, 
-                                //               EndTime = @EndTime, 
-                                //               Location = @Location 
-                                //           WHERE Title = @Title";
+                                ;
                                 string updateQuery = "SP_UpdateIneichenProductData";
                                 using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
                                 {
@@ -308,3 +250,48 @@ namespace IneichenScraper
 
 
 
+//void InsertAuctionDataIntoDatabase(List<IneichenProduct> auctionDataList)
+//{
+
+//    string conn = ConfigurationManager.ConnectionStrings["CreateConnection"].ConnectionString;
+
+//    using (SqlConnection connection = new SqlConnection(conn))
+//    {
+//        connection.Open();
+
+//        try
+//        {
+//            foreach (var data in auctionDataList)
+//            {
+//                // stored procedure
+//                string insertQuery = "SP_InsertIneichenProductData";
+
+//                using (SqlCommand command = new SqlCommand(insertQuery, connection))
+//                {
+//                    command.CommandType = CommandType.StoredProcedure;
+
+//                    command.Parameters.AddWithValue("@Title", data.Title);
+//                    command.Parameters.AddWithValue("@Description", data.Description);
+//                    command.Parameters.AddWithValue("@ImageUrl", data.ImageUrl);
+//                    command.Parameters.AddWithValue("@Link", data.Link);
+//                    command.Parameters.AddWithValue("@LotCount", data.LotCount);
+//                    command.Parameters.AddWithValue("@StartDate", data.StartDate);
+//                    command.Parameters.AddWithValue("@StartMonth", data.StartMonth);
+//                    command.Parameters.AddWithValue("@StartYear", data.StartYear);
+//                    command.Parameters.AddWithValue("@StartTime", data.StartTime);
+//                    command.Parameters.AddWithValue("@EndDate", data.EndDate);
+//                    command.Parameters.AddWithValue("@EndMonth", data.EndMonth);
+//                    command.Parameters.AddWithValue("@EndYear", data.EndYear);
+//                    command.Parameters.AddWithValue("@EndTime", data.EndTime);
+//                    command.Parameters.AddWithValue("@Location", data.Location);
+
+//                    command.ExecuteNonQuery();
+//                }
+//            }
+//        }
+//        catch (Exception ex)
+//        {
+//            Console.WriteLine(ex.Message.ToString());
+//        }
+//    }
+//}
